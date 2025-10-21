@@ -28,6 +28,7 @@ runs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
+        ref: ${{ inputs.main-branch }}
         fetch-depth: 0 # important pour les merges et tags
 
     - name: Configure Git
