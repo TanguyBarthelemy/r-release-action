@@ -15,8 +15,8 @@ inputs:
     default: ${{ GITHUB_PAT }}
   main-branch:
     description: "Main branch name"
-    required: true
-    default: "main"
+    required: false
+    default: ''
   dev-branch:
     description: "Development branch name (optional)"
     required: false
@@ -28,7 +28,7 @@ runs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        ref: ${{ inputs.main-branch }}
+        ref: ${{ inputs.main-branch || github.event.repository.default_branch }}
         fetch-depth: 0 # important pour les merges et tags
 
     - name: Configure Git
@@ -144,8 +144,19 @@ runs:
         MAIN_BRANCH: ${{ inputs.main-branch }}
         DEV_BRANCH: ${{ inputs.dev-branch }}
         tag: ${{ steps.set-tag.outputs.tag }}
+        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
       run: |
-        if [ -n "$MAIN_BRANCH" ] && [ -n "$DEV_BRANCH" ] && [ "$MAIN_BRANCH" != "$DEV_BRANCH" ]; then
+        if [ -z "$MAIN_BRANCH" ]; then
+          MAIN_BRANCH="$DEFAULT_BRANCH"
+          echo "⚙️ Using repository default branch: $MAIN_BRANCH"
+        fi
+        
+        echo "🔄 Pushing branches and tag..."
+        echo "Main branch : $MAIN_BRANCH"
+        echo "Dev branch  : ${DEV_BRANCH:-none}"
+        echo "Tag         : $TAG"
+        
+        if [ -n "$DEV_BRANCH" ] && [ "$MAIN_BRANCH" != "$DEV_BRANCH" ]; then
           git push --atomic origin "$MAIN_BRANCH" "$DEV_BRANCH" "$TAG"
         else
           git push --atomic origin "$MAIN_BRANCH" "$TAG"
