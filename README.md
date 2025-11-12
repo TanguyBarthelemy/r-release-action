@@ -1,6 +1,7 @@
 # Action to release a R package
 
-A reusable GitHub Action to automate the **release workflow of R packages**. it includes version bumping, changelog update, tagging, and GitHub release creation.
+This action allows you to prepare the R package before, during and after the release process on GitHub.
+It includes version bumping, changelog update, tagging, and preparing a GitHub draft release.
 
 
 ## 🚀 Features
@@ -23,7 +24,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "New version tag"
+        description: "Release tag (e.g. v1.2.0)"
         required: true
         type: string
 
@@ -81,11 +82,11 @@ jobs:
 
 1) Validation of the version tags (`vX.Y.Z`)
 2) Checkout develop branch
-3) Updates `DESCRIPTION` and `NEWS.md` (with the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format)  automatically
+3) Updates `DESCRIPTION` and `NEWS.md` (with the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) convention) automatically
 4) Commit the changes
 5) Checkout to main branch and merge develop -> main
 6) Create new tag version
-7) Checkout to develop branch and merge main -> develop
+7) Checkout to develop branch and merge back main -> develop
 8) Bumps the development version
 9) Commit develop version
 10) Push main, develop and tag
@@ -118,10 +119,10 @@ github_token: ${{ github.token }}
 
 GitHub automatically provides a temporary token with appropriate rights.
 
+
 ### Option 2 — Personal Access Token (PAT)
 
 If you need to push across organizations or private repositories, create a secret (e.g. WORKFLOW_TOKEN) with your PAT:
-
 
 ```yaml
 env:
@@ -132,6 +133,7 @@ steps:
     with:
       github_token: ${{ env.GITHUB_PAT }}
 ```
+
 
 ## 🧰 dependencies
 

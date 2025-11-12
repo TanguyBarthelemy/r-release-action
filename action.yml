@@ -48,8 +48,7 @@ runs:
     - name: Install R dependencies
       shell: Rscript {0}
       run: |
-        install.packages("remotes")
-        remotes::install_github("TanguyBarthelemy/releaser")
+        install.packages(c("remotes", "desc", "releaser"))
 
     - name: Validate tag
       id: set-tag
@@ -77,10 +76,11 @@ runs:
       run: |
         library("desc")
         library("releaser")
+        
         tag <- Sys.getenv("tag")
         new_version <- substr(x = tag, start = 2, stop = nchar(tag))
-        desc_set_version(version = new_version)
-        update_news_md(new_version = new_version, path = ".", gh_repo = Sys.getenv("gh_repo"))
+        desc_set_version(version = new_version, file = ".")
+        update_news_md(version_number = new_version, path = ".")
 
     - name: Commit release
       shell: bash
@@ -126,7 +126,8 @@ runs:
       shell: Rscript {0}
       run: |
         library("desc")
-        desc_bump_version(which = "dev")
+        
+        desc_bump_version(which = "dev", file = ".")
 
     - name: Commit dev bump
       shell: bash
@@ -170,6 +171,7 @@ runs:
         tag: ${{ steps.set-tag.outputs.tag }}
       run: |
         library("releaser")
+        
         tag <- Sys.getenv("tag")
         new_version <- substr(tag, 2, nchar(tag))
         release_body <- paste0("# Release ", new_version, "\n\n", get_changes(".", new_version))
