@@ -184,3 +184,7 @@ runs:
         tag_name: ${{ steps.set-tag.outputs.tag }}
         body: ${{ steps.create-body.outputs.body }}
         draft: true
+
+branding:
+  icon: "tag"
+  color: "blue"
