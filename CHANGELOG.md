@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+* shell field for each step
+* main -> dev branch by default
+
+
 ## [1.0.0] - 2025-11-12
 
 ### Added
