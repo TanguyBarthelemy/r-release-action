@@ -10,9 +10,9 @@ inputs:
     description: "GitHub repository (e.g. user/repo)"
     required: true
   github_token:
-    description: "GitHub token with write permissions"
-    required: true
-    default: ${{ GITHUB_TOKEN }}
+    description: "Authorized secret GitHub Personal Access Token. Defaults to github.token"
+    required: false
+    default: ${{ github.token }}
   main-branch:
     description: "Main branch name"
     required: false
@@ -184,6 +184,7 @@ runs:
         tag_name: ${{ steps.set-tag.outputs.tag }}
         body: ${{ steps.create-body.outputs.body }}
         draft: true
+        token: ${{ inputs.github_token }}
 
 branding:
   icon: "tag"
