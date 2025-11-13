@@ -12,7 +12,7 @@ inputs:
   github_token:
     description: "GitHub token with write permissions"
     required: true
-    default: ${{ GITHUB_PAT }}
+    default: ${{ GITHUB_TOKEN }}
   main-branch:
     description: "Main branch name"
     required: false
