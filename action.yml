@@ -38,6 +38,7 @@ runs:
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
     - name: Install libcurl
+      shell: bash
       run: sudo apt-get install libcurl4-openssl-dev
 
     - name: Install R
