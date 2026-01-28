@@ -177,7 +177,7 @@ runs:
 
         tag <- Sys.getenv("tag")
         new_version <- substr(tag, 2, nchar(tag))
-        release_body <- paste0("# Release ", new_version, "\n\n", get_changes(".", new_version))
+        release_body <- paste0("# Release [", new_version, "]\n\n", get_changes(".", new_version))
         cat("body<<EOF\n", release_body, "\nEOF", file = Sys.getenv("GITHUB_OUTPUT"))
 
     # --- Publish release ---
