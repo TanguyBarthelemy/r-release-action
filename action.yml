@@ -78,7 +78,7 @@ runs:
       run: |
         library("desc")
         library("releaser")
-        
+
         tag <- Sys.getenv("tag")
         new_version <- substr(x = tag, start = 2, stop = nchar(tag))
         desc_set_version(version = new_version, file = ".")
@@ -87,6 +87,7 @@ runs:
     - name: Commit release
       shell: bash
       env:
+        tag: ${{ steps.set-tag.outputs.tag }}
         CO_AUTHOR_NAME: ${{ github.actor }}
         CO_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
       run: |
@@ -128,7 +129,7 @@ runs:
       shell: Rscript {0}
       run: |
         library("desc")
-        
+
         desc_bump_version(which = "dev", file = ".")
 
     - name: Commit dev bump
@@ -153,16 +154,16 @@ runs:
           MAIN_BRANCH="$DEFAULT_BRANCH"
           echo "⚙️ Using repository default branch: $MAIN_BRANCH"
         fi
-        
+
         echo "🔄 Pushing branches and tag..."
         echo "Main branch : $MAIN_BRANCH"
         echo "Dev branch  : ${DEV_BRANCH:-none}"
-        echo "Tag         : $TAG"
-        
+        echo "Tag         : $tag"
+
         if [ -n "$DEV_BRANCH" ] && [ "$MAIN_BRANCH" != "$DEV_BRANCH" ]; then
-          git push --atomic origin "$MAIN_BRANCH" "$DEV_BRANCH" "$TAG"
+          git push --atomic origin "$MAIN_BRANCH" "$DEV_BRANCH" "$tag"
         else
-          git push --atomic origin "$MAIN_BRANCH" "$TAG"
+          git push --atomic origin "$MAIN_BRANCH" "$tag"
         fi
 
     # --- Create release body ---
@@ -173,7 +174,7 @@ runs:
         tag: ${{ steps.set-tag.outputs.tag }}
       run: |
         library("releaser")
-        
+
         tag <- Sys.getenv("tag")
         new_version <- substr(tag, 2, nchar(tag))
         release_body <- paste0("# Release ", new_version, "\n\n", get_changes(".", new_version))
