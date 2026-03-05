@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: TanguyBarthelemy/r-release-action@v1.0.0
+      - uses: TanguyBarthelemy/r-release-action@v1.0.1
         with:
           tag: ${{ github.event.inputs.tag }}
           gh_repo: "TanguyBarthelemy/IssueTrackeR"
@@ -68,7 +68,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: TanguyBarthelemy/r-release-action@v1.0.0
+      - uses: TanguyBarthelemy/r-release-action@v1.0.1
         with:
           tag: ${{ github.event.inputs.tag }}
           gh_repo: "TanguyBarthelemy/IssueTrackeR"
@@ -129,7 +129,7 @@ env:
   GITHUB_PAT: ${{ secrets.WORKFLOW_TOKEN }}
 
 steps:
-  - uses: TanguyBarthelemy/r-release-action@v1.0.0
+  - uses: TanguyBarthelemy/r-release-action@v1.0.1
     with:
       github_token: ${{ env.GITHUB_PAT }}
 ```
