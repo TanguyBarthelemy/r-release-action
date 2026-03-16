@@ -64,7 +64,7 @@ runs:
         library("desc")
 
         current_version <- desc_get_version(file = ".")
-        possible_tags <- paste0("v", get_different_future_version(version_number = current_version))
+        possible_tags <- paste0("v", c(current_version, get_different_future_version(version_number = current_version)))
 
         tag <- Sys.getenv("tag")
         if (!startsWith(tag, "v")) tag <- paste0("v", tag)
