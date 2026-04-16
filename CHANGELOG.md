@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-03-16
+
 ### Changed
 
 * Accept current Java version
@@ -16,7 +18,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 * Update apt version
 
 
-## [1.0.1] - 2025-01-28
+## [1.0.1] - 2026-01-28
 
 ### Fixed
 
@@ -33,6 +35,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Adapt to the {releaser} R package release on CRAN (v1.0.0)
 
 
-[Unreleased]: https://github.com/TanguyBarthelemy/r-release-action/compare/v1.0.1...HEAD
-[1.0.1]: https://github.com/TanguyBarthelemy/r-release-action/releases/tag/v1.0.1
+[Unreleased]: https://github.com/TanguyBarthelemy/r-release-action/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/TanguyBarthelemy/r-release-action/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/TanguyBarthelemy/r-release-action/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/TanguyBarthelemy/r-release-action/releases/tag/v1.0.0
