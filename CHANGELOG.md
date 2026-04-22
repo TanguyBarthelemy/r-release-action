@@ -7,6 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+* New deps to libuv (related to the [R package {fs}](https://github.com/r-lib/fs/compare/v2.0.1..main))
+
+
 ## [1.0.2] - 2026-03-16
 
 ### Changed

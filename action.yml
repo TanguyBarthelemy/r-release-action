@@ -27,7 +27,7 @@ runs:
 
   steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         ref: ${{ inputs.dev-branch || github.event.repository.default_branch }}
         fetch-depth: 0 # important pour les merges et tags
@@ -38,11 +38,12 @@ runs:
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-    - name: Install libcurl
+    - name: Install ubuntu deps
       shell: bash
       run: |
         sudo apt-get update
         sudo apt-get install libcurl4-openssl-dev
+        sudo apt-get install -y libuv1-dev
 
     - name: Install R
       uses: r-lib/actions/setup-r@v2
