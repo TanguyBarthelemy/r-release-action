@@ -86,9 +86,11 @@ runs:
         desc_set_version(version = new_version, file = ".")
 
     - name: Check changelog using Heylogs latest version
+      shell: bash
       run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::check -Dheylogs.inputFiles=NEWS.md
 
     - name: Update NEWS Check changelog using Heylogs latest version
+      shell: bash
       env:
         version_number: ${{ steps.set-tag.outputs.version_number }}
       run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::release -Dheylogs.inputFile=NEWS.md -Dheylogs.ref $version_number
@@ -184,6 +186,7 @@ runs:
 
     - name: Generate release body
       id: create-body
+      shell: bash
       env:
         version_number: ${{ steps.set-tag.outputs.version_number }}
       run: |
