@@ -19,15 +19,19 @@ inputs:
     required: false
     default: ''
 
+env:
+  MAVEN_ARGS: "-B -ntp"
+
 runs:
   using: "composite"
 
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
+
+   - name: Checkout and Setup Maven
+     uses: s4u/setup-maven-action@v1.20.0
       with:
-        ref: ${{ inputs.dev-branch || github.event.repository.default_branch }}
-        fetch-depth: 0 # important pour les merges et tags
+        checkout-ref: ${{ inputs.dev-branch || github.event.repository.default_branch }}
+        checkout-fetch-depth: 0 # important pour les merges et tags
 
     - name: Configure Git
       shell: bash
@@ -81,13 +85,21 @@ runs:
         new_version <- Sys.getenv("version_number")
         desc_set_version(version = new_version, file = ".")
 
-    - name: Update NEWS
-      uses: jbangdev/jbang-action@v0.130.0
+    - name: Check changelog using Heylogs latest version
+      run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::check -Dheylogs.inputFiles=NEWS.md
+
+    - name: Update NEWS Check changelog using Heylogs latest version
       env:
         version_number: ${{ steps.set-tag.outputs.version_number }}
-      with:
-        script: com.github.nbbrd.heylogs:heylogs-cli:0.17.1:bin
-        scriptargs: "release NEWS.md --ref $version_number"
+      run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::release -Dheylogs.inputFile=NEWS.md -Dheylogs.ref $version_number
+
+    # - name: Update NEWS
+    #   uses: jbangdev/jbang-action@v0.130.0
+    #   env:
+    #     version_number: ${{ steps.set-tag.outputs.version_number }}
+    #   with:
+    #     script: com.github.nbbrd.heylogs:heylogs-cli:0.17.1:bin
+    #     scriptargs: "release NEWS.md --ref $version_number"
 
     - name: Commit release
       shell: bash
@@ -172,17 +184,30 @@ runs:
 
     - name: Generate release body
       id: create-body
-      shell: bash
       env:
         version_number: ${{ steps.set-tag.outputs.version_number }}
       run: |
-        BODY=$(jbang com.github.nbbrd.heylogs:heylogs-cli:0.17.1:bin extract NEWS.md --ref "$version_number")
+        BODY=$(mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::extract -Dheylogs.inputFile=NEWS.md -Dheylogs.ref "$version_number")
 
         {
           echo "body<<EOF"
           echo "$BODY"
           echo "EOF"
         } >> "$GITHUB_OUTPUT"
+
+    # - name: Generate release body
+    #   id: create-body
+    #   shell: bash
+    #   env:
+    #     version_number: ${{ steps.set-tag.outputs.version_number }}
+    #   run: |
+    #     BODY=$(jbang com.github.nbbrd.heylogs:heylogs-cli:0.17.1:bin extract NEWS.md --ref "$version_number")
+    #
+    #     {
+    #       echo "body<<EOF"
+    #       echo "$BODY"
+    #       echo "EOF"
+    #     } >> "$GITHUB_OUTPUT"
 
     - name: Check release body
       id: check-body
