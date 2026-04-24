@@ -194,7 +194,7 @@ runs:
         } >> "$GITHUB_OUTPUT"
 
     - name: Check release body
-      id: create-body
+      id: check-body
       shell: bash
       env:
         body: ${{ steps.create-body.outputs.body }}
