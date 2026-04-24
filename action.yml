@@ -27,8 +27,8 @@ runs:
 
   steps:
 
-   - name: Checkout and Setup Maven
-     uses: s4u/setup-maven-action@v1.20.0
+    - name: Checkout and Setup Maven
+      uses: s4u/setup-maven-action@v1.20.0
       with:
         checkout-ref: ${{ inputs.dev-branch || github.event.repository.default_branch }}
         checkout-fetch-depth: 0 # important pour les merges et tags
