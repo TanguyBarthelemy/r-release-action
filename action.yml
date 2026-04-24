@@ -54,7 +54,7 @@ runs:
     - name: Install R dependencies
       shell: Rscript {0}
       run: |
-        install.packages(c("remotes", "desc", "releaser"), repos = "http://cran.us.r-project.org")
+        install.packages(c("desc", "releaser"), repos = "http://cran.us.r-project.org")
 
     - name: Validate tag
       id: set-tag
