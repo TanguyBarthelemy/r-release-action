@@ -6,9 +6,6 @@ inputs:
   tag:
     description: "New release tag (e.g. v1.2.3)"
     required: true
-  gh_repo:
-    description: "GitHub repository (e.g. user/repo)"
-    required: true
   github_token:
     description: "Authorized secret GitHub Personal Access Token. Defaults to github.token"
     required: false
@@ -70,22 +67,36 @@ runs:
         tag <- Sys.getenv("tag")
         if (!startsWith(tag, "v")) tag <- paste0("v", tag)
         if (!tag %in% possible_tags) stop("Invalid tag. Possible tags: ", toString(possible_tags))
+        new_version <- substr(x = tag, start = 2, stop = nchar(tag))
 
         system(paste0("echo \"tag=", tag, "\" >> \"$GITHUB_OUTPUT\""))
+        system(paste0("echo \"version_number=", new_version, "\" >> \"$GITHUB_OUTPUT\""))
 
-    - name: Update DESCRIPTION & NEWS
+    - name: Update DESCRIPTION
       shell: Rscript {0}
       env:
-        tag: ${{ steps.set-tag.outputs.tag }}
-        gh_repo: ${{ inputs.gh_repo }}
+        version_number: ${{ steps.set-tag.outputs.version_number }}
       run: |
         library("desc")
-        library("releaser")
-
-        tag <- Sys.getenv("tag")
-        new_version <- substr(x = tag, start = 2, stop = nchar(tag))
+        new_version <- Sys.getenv("version_number")
         desc_set_version(version = new_version, file = ".")
+
+    - name: Update NEWS
+      shell: Rscript {0}
+      env:
+        version_number: ${{ steps.set-tag.outputs.version_number }}
+      run: |
+        library("releaser")
+        new_version <- Sys.getenv("version_number")
         update_news_md(version_number = new_version, path = ".")
+
+    - name: Update NEWS
+      uses: jbangdev/jbang-action@v0.130.0
+      env:
+        version_number: ${{ steps.set-tag.outputs.version_number }}
+      with:
+        script: com.github.nbbrd.heylogs:heylogs-cli:0.17.1:bin
+        scriptargs: "release --ref $version_number"
 
     - name: Commit release
       shell: bash
@@ -132,7 +143,6 @@ runs:
       shell: Rscript {0}
       run: |
         library("desc")
-
         desc_bump_version(which = "dev", file = ".")
 
     - name: Commit dev bump
@@ -163,34 +173,42 @@ runs:
         echo "Dev branch  : ${DEV_BRANCH:-none}"
         echo "Tag         : $tag"
 
-        if [ -n "$DEV_BRANCH" ] && [ "$MAIN_BRANCH" != "$DEV_BRANCH" ]; then
-          git push --atomic origin "$MAIN_BRANCH" "$DEV_BRANCH" "$tag"
-        else
-          git push --atomic origin "$MAIN_BRANCH" "$tag"
-        fi
+        # if [ -n "$DEV_BRANCH" ] && [ "$MAIN_BRANCH" != "$DEV_BRANCH" ]; then
+        #   git push --atomic origin "$MAIN_BRANCH" "$DEV_BRANCH" "$tag"
+        # else
+        #   git push --atomic origin "$MAIN_BRANCH" "$tag"
+        # fi
 
-    # --- Create release body ---
     - name: Generate release body
       id: create-body
-      shell: Rscript {0}
+      shell: bash
       env:
-        tag: ${{ steps.set-tag.outputs.tag }}
+        version_number: ${{ steps.set-tag.outputs.version_number }}
       run: |
-        library("releaser")
+        BODY=$(jbang com.github.nbbrd.heylogs:heylogs-cli:0.17.1:bin extract NEWS-normal    .md --ref "$version_number")
 
-        tag <- Sys.getenv("tag")
-        new_version <- substr(tag, 2, nchar(tag))
-        release_body <- paste0("# Release [", new_version, "]\n\n", get_changes(".", new_version))
-        cat("body<<EOF\n", release_body, "\nEOF", file = Sys.getenv("GITHUB_OUTPUT"))
+        {
+          echo "body<<EOF"
+          echo "$BODY"
+          echo "EOF"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Check release body
+      id: create-body
+      shell: bash
+      env:
+        body: ${{ steps.create-body.outputs.body }}
+      run: |
+        echo "$BODY"
 
     # --- Publish release ---
-    - name: Publish GitHub release (draft)
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: ${{ steps.set-tag.outputs.tag }}
-        body: ${{ steps.create-body.outputs.body }}
-        draft: true
-        token: ${{ inputs.github_token }}
+    # - name: Publish GitHub release (draft)
+    #   uses: softprops/action-gh-release@v2
+    #   with:
+    #     tag_name: ${{ steps.set-tag.outputs.tag }}
+    #     body: ${{ steps.create-body.outputs.body }}
+    #     draft: true
+    #     token: ${{ inputs.github_token }}
 
 branding:
   icon: "tag"
