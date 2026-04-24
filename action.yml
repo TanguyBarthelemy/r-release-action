@@ -82,21 +82,12 @@ runs:
         desc_set_version(version = new_version, file = ".")
 
     - name: Update NEWS
-      shell: Rscript {0}
-      env:
-        version_number: ${{ steps.set-tag.outputs.version_number }}
-      run: |
-        library("releaser")
-        new_version <- Sys.getenv("version_number")
-        update_news_md(version_number = new_version, path = ".")
-
-    - name: Update NEWS
       uses: jbangdev/jbang-action@v0.130.0
       env:
         version_number: ${{ steps.set-tag.outputs.version_number }}
       with:
         script: com.github.nbbrd.heylogs:heylogs-cli:0.17.1:bin
-        scriptargs: "release --ref $version_number"
+        scriptargs: "release NEWS.md --ref $version_number"
 
     - name: Commit release
       shell: bash
@@ -185,7 +176,7 @@ runs:
       env:
         version_number: ${{ steps.set-tag.outputs.version_number }}
       run: |
-        BODY=$(jbang com.github.nbbrd.heylogs:heylogs-cli:0.17.1:bin extract NEWS-normal    .md --ref "$version_number")
+        BODY=$(jbang com.github.nbbrd.heylogs:heylogs-cli:0.17.1:bin extract NEWS.md --ref "$version_number")
 
         {
           echo "body<<EOF"
