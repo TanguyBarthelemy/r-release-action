@@ -190,13 +190,22 @@ runs:
       env:
         version_number: ${{ steps.set-tag.outputs.version_number }}
       run: |
-        BODY=$(mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::extract -D heylogs.inputFile=NEWS.md -D heylogs.ref="$version_number")
+        OUTPUT_FILE=$(mktemp)
+
+        mvn -U \
+          com.github.nbbrd.heylogs:heylogs-maven-plugin::extract \
+          -Dheylogs.inputFile=NEWS.md \
+          -Dheylogs.ref="$version_number" \
+          -Dheylogs.outputFile="$OUTPUT_FILE"
 
         {
           echo "body<<EOF"
-          echo "$BODY"
+          cat "$OUTPUT_FILE"
           echo "EOF"
         } >> "$GITHUB_OUTPUT"
+
+        rm -f "$OUTPUT_FILE"
+
 
     # - name: Generate release body
     #   id: create-body
@@ -216,9 +225,10 @@ runs:
       id: check-body
       shell: bash
       env:
-        body: ${{ steps.create-body.outputs.body }}
+        BODY: ${{ steps.create-body.outputs.body }}
       run: |
         echo "$BODY"
+        echo "${{ steps.create-body.outputs.body }}"
 
     # --- Publish release ---
     # - name: Publish GitHub release (draft)
