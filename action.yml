@@ -87,13 +87,13 @@ runs:
 
     - name: Check changelog using Heylogs latest version
       shell: bash
-      run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::check -Dheylogs.inputFiles=NEWS.md
+      run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::check -D heylogs.inputFiles=NEWS.md
 
     - name: Update NEWS Check changelog using Heylogs latest version
       shell: bash
       env:
         version_number: ${{ steps.set-tag.outputs.version_number }}
-      run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::release -Dheylogs.inputFile=NEWS.md -Dheylogs.ref $version_number
+      run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::release -D heylogs.inputFile=NEWS.md -D heylogs.ref=$version_number
 
     # - name: Update NEWS
     #   uses: jbangdev/jbang-action@v0.130.0
@@ -190,7 +190,7 @@ runs:
       env:
         version_number: ${{ steps.set-tag.outputs.version_number }}
       run: |
-        BODY=$(mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::extract -Dheylogs.inputFile=NEWS.md -Dheylogs.ref "$version_number")
+        BODY=$(mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::extract -D heylogs.inputFile=NEWS.md -D heylogs.ref="$version_number")
 
         {
           echo "body<<EOF"
