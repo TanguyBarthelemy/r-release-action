@@ -198,6 +198,8 @@ runs:
           -Dheylogs.ref="$version_number" \
           -Dheylogs.outputFile="$OUTPUT_FILE"
 
+        sed -i '1s/^## /## Release /' "$OUTPUT_FILE"
+
         {
           echo "body<<EOF"
           cat "$OUTPUT_FILE"
@@ -206,29 +208,10 @@ runs:
 
         rm -f "$OUTPUT_FILE"
 
-
-    # - name: Generate release body
-    #   id: create-body
-    #   shell: bash
-    #   env:
-    #     version_number: ${{ steps.set-tag.outputs.version_number }}
-    #   run: |
-    #     BODY=$(jbang com.github.nbbrd.heylogs:heylogs-cli:0.17.1:bin extract NEWS.md --ref "$version_number")
-    #
-    #     {
-    #       echo "body<<EOF"
-    #       echo "$BODY"
-    #       echo "EOF"
-    #     } >> "$GITHUB_OUTPUT"
-
     - name: Check release body
       id: check-body
       shell: bash
-      env:
-        BODY: ${{ steps.create-body.outputs.body }}
-      run: |
-        echo "$BODY"
-        echo "${{ steps.create-body.outputs.body }}"
+      run: echo "${{ steps.create-body.outputs.body }}"
 
     # --- Publish release ---
     # - name: Publish GitHub release (draft)
