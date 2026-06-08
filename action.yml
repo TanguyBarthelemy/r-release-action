@@ -95,14 +95,6 @@ runs:
         version_number: ${{ steps.set-tag.outputs.version_number }}
       run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::release -D heylogs.inputFile=NEWS.md -D heylogs.ref=$version_number
 
-    # - name: Update NEWS
-    #   uses: jbangdev/jbang-action@v0.130.0
-    #   env:
-    #     version_number: ${{ steps.set-tag.outputs.version_number }}
-    #   with:
-    #     script: com.github.nbbrd.heylogs:heylogs-cli:0.17.1:bin
-    #     scriptargs: "release NEWS.md --ref $version_number"
-
     - name: Commit release
       shell: bash
       env:
@@ -178,11 +170,11 @@ runs:
         echo "Dev branch  : ${DEV_BRANCH:-none}"
         echo "Tag         : $tag"
 
-        # if [ -n "$DEV_BRANCH" ] && [ "$MAIN_BRANCH" != "$DEV_BRANCH" ]; then
-        #   git push --atomic origin "$MAIN_BRANCH" "$DEV_BRANCH" "$tag"
-        # else
-        #   git push --atomic origin "$MAIN_BRANCH" "$tag"
-        # fi
+        if [ -n "$DEV_BRANCH" ] && [ "$MAIN_BRANCH" != "$DEV_BRANCH" ]; then
+          git push --atomic origin "$MAIN_BRANCH" "$DEV_BRANCH" "$tag"
+        else
+          git push --atomic origin "$MAIN_BRANCH" "$tag"
+        fi
 
     - name: Generate release body
       id: create-body
@@ -214,13 +206,13 @@ runs:
       run: echo "${{ steps.create-body.outputs.body }}"
 
     # --- Publish release ---
-    # - name: Publish GitHub release (draft)
-    #   uses: softprops/action-gh-release@v2
-    #   with:
-    #     tag_name: ${{ steps.set-tag.outputs.tag }}
-    #     body: ${{ steps.create-body.outputs.body }}
-    #     draft: true
-    #     token: ${{ inputs.github_token }}
+    - name: Publish GitHub release (draft)
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.set-tag.outputs.tag }}
+        body: ${{ steps.create-body.outputs.body }}
+        draft: true
+        token: ${{ inputs.github_token }}
 
 branding:
   icon: "tag"
