@@ -34,7 +34,7 @@ runs:
         fetch-depth: 0
         token: ${{ inputs.github_token }}
 
-    - name: Checkout and Setup Maven
+    - name: Setup Maven
       uses: s4u/setup-maven-action@v1.20.0
       with:
         checkout-enabled: false
@@ -210,12 +210,6 @@ runs:
       id: check-body
       shell: bash
       run: echo "${{ steps.create-body.outputs.body }}"
-
-    - name: Debug remote
-      shell: bash
-      run: |
-        git remote -v
-        git config --list | grep credential
 
     # --- Publish release ---
     - name: Publish GitHub release (draft)
