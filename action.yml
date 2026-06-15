@@ -27,11 +27,17 @@ runs:
 
   steps:
 
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.dev-branch || github.event.repository.default_branch }}
+        fetch-depth: 0
+        token: ${{ inputs.github_token }}
+
     - name: Checkout and Setup Maven
       uses: s4u/setup-maven-action@v1.20.0
       with:
-        checkout-ref: ${{ inputs.dev-branch || github.event.repository.default_branch }}
-        checkout-fetch-depth: 0 # important pour les merges et tags
+        checkout-enabled: false
 
     - name: Configure Git
       shell: bash
@@ -204,6 +210,12 @@ runs:
       id: check-body
       shell: bash
       run: echo "${{ steps.create-body.outputs.body }}"
+
+    - name: Debug remote
+      shell: bash
+      run: |
+        git remote -v
+        git config --list | grep credential
 
     # --- Publish release ---
     - name: Publish GitHub release (draft)
