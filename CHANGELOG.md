@@ -7,6 +7,15 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+* Update version of actions/checkout to v7
+
+### Removed
+
+* "Release" in the header of the release
+
+
 ## [1.1.1] - 2026-06-15
 
 ### Changed
