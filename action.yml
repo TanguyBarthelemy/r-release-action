@@ -18,6 +18,10 @@ inputs:
     description: "Development branch name (optional)"
     required: false
     default: ''
+  change-remotes:
+    description: "Update the DESCRIPTION Remotes field with rjdverse packages"
+    required: false
+    default: "false"
 
 env:
   MAVEN_ARGS: "-B -ntp"
@@ -60,7 +64,9 @@ runs:
     - name: Install R dependencies
       shell: Rscript {0}
       run: |
-        install.packages(c("desc", "releaser"), repos = "http://cran.us.r-project.org")
+        install.packages("pak")
+        pak::pak("TanguyBarthelemy/releaser")
+        install.packages(c("desc"), repos = "http://cran.us.r-project.org")
 
     - name: Validate tag
       id: set-tag
@@ -90,6 +96,13 @@ runs:
         library("desc")
         new_version <- Sys.getenv("version_number")
         desc_set_version(version = new_version, file = ".")
+
+    - name: Prepare release
+      if: ${{ inputs.change-remotes == 'true' }}
+      shell: Rscript {0}
+      run: |
+        library("releaser")
+        set_release_remotes(".", enabled = FALSE)
 
     - name: Check changelog using Heylogs latest version
       shell: bash
@@ -147,6 +160,13 @@ runs:
       run: |
         library("desc")
         desc_bump_version(which = "dev", file = ".")
+
+    - name: Restore development remotes
+      if: ${{ inputs.change-remotes == 'true' }}
+      shell: Rscript {0}
+      run: |
+        library("releaser")
+        set_release_remotes(".", enabled = TRUE)
 
     - name: Commit dev bump
       shell: bash
